@@ -1,0 +1,13 @@
+name: B16B5
+version: 0.1.0
+
+authors:
+  - Arthur Poulet <arthur.poulet@mailoo.org>
+
+targets:
+  B16B5:
+    main: src/B16B5.cr
+
+crystal: 0.20.0
+
+license: MIT
