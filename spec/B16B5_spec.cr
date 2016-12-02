@@ -4,14 +4,11 @@ include B16B5
 
 describe B16B5 do
   it "works" do
-    data = "012345678".bytes
-    fulldata = data + Array.new((B16B5::BLOCK - data.size) % B16B5::BLOCK) { 0_u8 }
-
+    fulldata = "01234567".bytes
     key = "abcd"[0...B16B5::BLOCK].bytes
-    key = KEY # .blockvalue
 
-    encrypteddata = feistel_encrypt(fulldata, key)
-    decrypteddata = feistel_decrypt(encrypteddata, key)
+    encrypteddata = feistel_encrypt(fulldata, key, 8)
+    decrypteddata = feistel_decrypt(encrypteddata, key, 8)
     (encrypteddata == decrypteddata).should eq false
     (decrypteddata == fulldata).should eq true
   end

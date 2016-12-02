@@ -1,39 +1,23 @@
+require "base64"
+require "./B16B5/constants"
 require "./B16B5/helper"
-
-module B16B5
-  BLOCK           = 2
-  HALF_BLOCK      = BLOCK / 2
-  BLOCK_BITS      = BLOCK * 8
-  HALF_BLOCK_BITS = HALF_BLOCK * 8
-
-  alias Block = UInt16
-  alias HalfBlock = UInt8
-  alias Byte = UInt8
-end
-
 require "./B16B5/cipher"
+require "./B16B5/arguments"
 
 include B16B5
 
-DATA = "012345678".bytes
-fulldata = DATA + Array.new((B16B5::BLOCK - DATA.size) % B16B5::BLOCK) { 0_u8 }
+args = Argument.new
+fulldata = args.input.gets_to_end.bytes            # TODO: use IO to encrypt / decrypt without memory overusage
+key = args.key.gets_to_end.bytes[0...B16B5::BLOCK] # TODO: use the full key
 
-KEY = "abcd"[0...B16B5::BLOCK].bytes
-key = KEY # .blockvalue
+output = nil
+if args.mode == :encrypt
+  output = feistel_encrypt(fulldata, key, args.rounds)
+  # output = Base64.strict_encode(output.map(&.chr).join("")).bytes if args.ascii
+else
+  # fulldata = Base64.decode_string(fulldata.map(&.chr).join("")).bytes if args.ascii
+  output = feistel_decrypt(fulldata, key, args.rounds)
+end
 
-VECTOR = "xu1a"[0...B16B5::BLOCK].bytes
-
-p fulldata
-p key
-
-puts "ENCRYPT"
-encrypteddata = feistel_encrypt(fulldata, key)
-puts "\n"
-puts "DECRYPT"
-decrypteddata = feistel_decrypt(encrypteddata, key)
-
-# puts "--"
-puts "Original  = " + fulldata.map { |e| e.to_s.rjust(3, '0') }.join(" ")
-puts "Encrypted = " + encrypteddata.map { |e| e.to_s.rjust(3, '0') }.join(" ")
-puts "Decrypted = " + decrypteddata.map { |e| e.to_s.rjust(3, '0') }.join(" ")
-puts "Finished  = " + decrypteddata.map(&.chr).join("")
+args.output.write Slice(UInt8).new(output.to_unsafe, output.size)
+args.output.flush

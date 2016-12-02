@@ -1,18 +1,20 @@
 # B16B5
 
-TODO: Write a description here
+Simple implementation for testing purpose.
+Do not use it for sensitive data.
 
 ## Installation
 
-
-TODO: Write installation instructions here
-
+- Have crystal 0.20 or greater installed (an shards)
+- `make`
 
 ## Usage
 
+```
+./B16B5 -i PLAINTEX   -k KEY_FILE -o CIPHERTEXT # encrypt
+./B16B5 -i CIPHERTEXT -k KEY_FILE -o PLAINTEX -d # decrypt
+```
 
-
-TODO: Write usage instructions here
 
 ## Development
 
